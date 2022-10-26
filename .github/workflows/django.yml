@@ -3,12 +3,16 @@ name: Django CI
 on:
   pull_request:
     types: [opened, reopened]
-  paths:
-    - '**/migrations/**'
-
+    branches: 
+      - 'master'
+    paths: 
+      - '**/migrations/**'
+    
 jobs:
-  runs-on: ubuntu-latest
-  steps:
+  build:
+    
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/github-script@v5
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
