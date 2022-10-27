@@ -23,6 +23,8 @@ jobs:
               repo: context.repo.repo,
               body: `Migration PR. PFB best practices for migrations.
 
-                While Removing a field from model, there should be 2 PR's , first PR should remove all references for that field. Secondly create a different PR for removal of that field using migrations.
-                A maximum of one migration per app per pull request. ✨`
+                While Removing a field from model, there should be 2 PR's :
+                1. Should remove all references for that field. 
+                2. Create a different PR for removal of that field using migrations.
+                3. A maximum of one migration per app per pull request. ✨`
             })
