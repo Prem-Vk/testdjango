@@ -13,7 +13,7 @@ jobs:
     
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v5
+      - uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -21,7 +21,8 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `**Welcome**, new contributor!
+              body: `Migration PR. PFB best practices for migrations.
 
-                Please make sure you're read our [contributing guide](CONTRIBUTING.md) and we look forward to reviewing your Pull request shortly ✨`
+                While Removing a field from model, there should be 2 PR's , first PR should remove all references for that field. Secondly create a different PR for removal of that field using migrations.
+                A maximum of one migration per app per pull request. ✨`
             })
