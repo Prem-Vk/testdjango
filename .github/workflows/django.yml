@@ -27,12 +27,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `Migration PR. PFB best practices for migrations.
-
-                The removal of a field HAS TO be done with little more care in following deployment order:
-                1. Make the field nullable in model & generate corresponding migration file.
-                    If the column we’re deleting is already nullable, we can skip this step.
-                2. Remove the field from the model and it’s usage from code. DO NOT generate a corresponding migration file.
-                    This will make the Django ORM to stop including this field name in SELECT queries.
-                3. Generate migration file for removing the field from database. ✨`
+              body: pulls
             })
