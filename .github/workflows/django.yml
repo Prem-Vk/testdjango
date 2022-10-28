@@ -40,12 +40,7 @@ jobs:
                 issue_number: context.issue.number,
               })
             }
-            const all_comments = await checkPullRequestComments();
-            const format_all_comments = await github.paginate(all_comments)
-            for (const comment of format_all_comments){
-              let comment_body = comment.body
-              console.log("comment_hai_bro", comment_body)
-            }
+            
             async function listAllPullRequestFiles(){
                 return await github.rest.pulls.listFiles({
                   owner: context.repo.owner,
@@ -64,5 +59,17 @@ jobs:
                 filenames.push(filename)
               }
             }
-            console.log("Issue_number_is", context.issue.number)
             // commentCreator(filenames, pr_number);
+            if (filenames){
+              const all_comments = await checkPullRequestComments();
+              const format_all_comments = await github.paginate(all_comments)
+              for (const comment of format_all_comments){
+                let comment_body = comment.body
+                if (comment_body === `${filenames} ${commentHeading} ${pr_number}`) {
+                  console.log("COmment_matched")
+                }else{
+                  console.log("Comment_not_matched", comment_body, `${filenames} ${commentHeading} ${pr_number}`)
+                }
+              }
+            }
+            
