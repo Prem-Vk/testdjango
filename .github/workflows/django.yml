@@ -42,7 +42,7 @@ jobs:
 
             for (const issue of issues) {
               let filename = String(issue.filename)
-              if (filename.includes("migrations"){
+              if (filename.includes("migrations")){
                 commentCreator();
               }
             }
