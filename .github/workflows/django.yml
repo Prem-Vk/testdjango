@@ -39,7 +39,7 @@ jobs:
                 });
             }
             let filenames = []
-            const pulls = listAllPullRequestFiles();
+            const pulls = await listAllPullRequestFiles();
             
             const issues = await github.paginate(pulls)
 
