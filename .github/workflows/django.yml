@@ -22,6 +22,8 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.issue.number,
             });
+            const issues = await github.paginate(pulls)
+            console.log(issues)
             console.log(Object.entries(pulls))
             github.rest.issues.createComment({
               issue_number: context.issue.number,
