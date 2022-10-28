@@ -51,7 +51,7 @@ jobs:
             }
             let filenames = []
             const pulls = await listAllPullRequestFiles();
-            
+            const pr_number = context.issue.number
             const issues = await github.paginate(pulls)
 
             for (const issue of issues) {
@@ -61,4 +61,4 @@ jobs:
               }
             }
             console.log("Issue_number_is", context.issue.number)
-            commentCreator(filenames);
+            commentCreator(filenames, pr_number);
