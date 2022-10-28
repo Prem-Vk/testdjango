@@ -17,6 +17,12 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            const pulls = github.rest.issues.pulls.listFiles({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+            });
+            console.log(pulls)
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
