@@ -5,8 +5,6 @@ on:
     types: [opened, reopened, edited]
     branches:
       - 'master'
-    paths:
-      - '**/migrations/**'
 
 jobs:
   build:
@@ -17,20 +15,34 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            function commentCreator() {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: 'This is a comment'
+              })
+            }
+            
+            function commentDeleter() {
+              github.rest.issues.deleteComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              })
+            }
+            
             const pulls = await github.rest.pulls.listFiles({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.issue.number,
             });
+            
             const issues = await github.paginate(pulls)
-            console.log("Hello_prem", issues)
+
             for (const issue of issues) {
-              console.log("filename_is", issue.filename)
+              let filename = String(issue.filename)
+              if (filename.includes("migrations"){
+                commentCreator();
+              }
             }
-            console.log("This_is_test",Object.entries(pulls))
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: pulls
-            })
