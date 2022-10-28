@@ -2,7 +2,7 @@ name: Migration Check
 
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [opened, reopened, edited]
     branches:
       - 'master'
     paths:
@@ -22,7 +22,9 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.issue.number,
             });
-            console.log(pulls)
+            for (const [key, value] of Object.entries(pulls)) {
+              console.log(key, value);
+            }
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
