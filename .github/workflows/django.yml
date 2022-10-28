@@ -23,8 +23,8 @@ jobs:
               pull_number: context.issue.number,
             });
             const issues = await github.paginate(pulls)
-            console.log(issues)
-            console.log(Object.entries(pulls))
+            console.log("Hello_prem", issues)
+            console.log("This_is_test",Object.entries(pulls))
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
