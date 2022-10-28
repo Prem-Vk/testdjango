@@ -17,7 +17,7 @@ jobs:
           script: |
             const commentHeading = 'Migration file detected for PR number: '
 
-            function commentCreator(filenames) {
+            function commentCreator(filenames, pr_number) {
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
