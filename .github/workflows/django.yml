@@ -15,12 +15,14 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            const commentHeading = 'Migration file detected for PR number: '
+
             function commentCreator(filenames) {
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `This is a comment ${filenames}`
+                body: `${filenames} ${commentHeading} ${pr_number}`
               })
             }
             
@@ -31,6 +33,14 @@ jobs:
                 repo: context.repo.repo,
               })
             }
+            function checkPullRequestComments(){
+              return github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              })
+            }
+            console.log("all_comments", checkPullRequestComments());
             async function listAllPullRequestFiles(){
                 return await github.rest.pulls.listFiles({
                   owner: context.repo.owner,
