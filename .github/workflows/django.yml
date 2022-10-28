@@ -22,9 +22,7 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.issue.number,
             });
-            for (const [key, value] of Object.entries(pulls)) {
-              console.log(key, value);
-            }
+            console.log(Object.entries(pulls))
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
