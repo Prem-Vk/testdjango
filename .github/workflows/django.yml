@@ -31,12 +31,15 @@ jobs:
                 repo: context.repo.repo,
               })
             }
+            async function listAllPullRequestFiles(){
+                return await github.rest.pulls.listFiles({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number,
+                });
+            }
             let filenames = []
-            const pulls = await github.rest.pulls.listFiles({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number,
-            });
+            const pulls = listAllPullRequestFiles();
             
             const issues = await github.paginate(pulls)
 
