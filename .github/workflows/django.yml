@@ -72,7 +72,7 @@ jobs:
             const all_comments = await getPullRequestComments();
             const migration_comment_available = await checkComments(all_comments);
 
-            if (filenames && typeof migration_comment_available === 'boolean'){
+            if (filenames.length > 0 && typeof migration_comment_available === 'boolean'){
                 commentCreator(filenames, pr_number);
             }else if(typeof migration_comment_available === 'string'){
                 let comment_id = parseInt(migration_comment_available.split("/").pop())
