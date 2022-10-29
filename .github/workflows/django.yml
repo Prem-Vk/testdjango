@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, reopened, edited]
     branches:
-      - 'master'
+      - 'develop'
 
 jobs:
   build:
@@ -15,7 +15,9 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const commentHeading = 'Migration file detected for PR number: '
+            const commentHeading = 'Migration file detected for PR number: ';
+            const pr_number = context.issue.number;
+            let filenames = [];
 
             function commentCreator(filenames, pr_number) {
               github.rest.issues.createComment({
@@ -26,21 +28,31 @@ jobs:
               })
             }
             
-            function commentDeleter() {
+            function commentDeleter(comment_id) {
               github.rest.issues.deleteComment({
-                issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
+                comment_id : `${comment_id}`
               })
             }
-            function checkPullRequestComments(){
+            function getPullRequestComments(){
               return github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
               })
             }
-            
+            async function checkComments(all_comments){
+              const format_all_comments = await github.paginate(all_comments)
+              for (const comment of format_all_comments){
+                  let comment_body = comment.body
+                  if (comment_body.includes(`${commentHeading} ${pr_number}`)) {
+                      return String(comment.url)
+                  }else{
+                      return false
+                  }
+              }
+            }
             async function listAllPullRequestFiles(){
                 return await github.rest.pulls.listFiles({
                   owner: context.repo.owner,
@@ -48,9 +60,7 @@ jobs:
                   pull_number: context.issue.number,
                 });
             }
-            let filenames = []
             const pulls = await listAllPullRequestFiles();
-            const pr_number = context.issue.number
             const issues = await github.paginate(pulls)
 
             for (const issue of issues) {
@@ -59,17 +69,13 @@ jobs:
                 filenames.push(filename)
               }
             }
-            // commentCreator(filenames, pr_number);
-            if (filenames){
-              const all_comments = await checkPullRequestComments();
-              const format_all_comments = await github.paginate(all_comments)
-              for (const comment of format_all_comments){
-                let comment_body = comment.body
-                if (comment_body === `${filenames} ${commentHeading} ${pr_number}`) {
-                  console.log("COmment_matched", comment_body, `${filenames} ${commentHeading} ${pr_number}`)
-                }else{
-                  console.log("Comment_not_matched", comment_body, `${filenames} ${commentHeading} ${pr_number}`)
-                }
-              }
+            const all_comments = await getPullRequestComments();
+            const migration_comment_available = await checkComments(all_comments);
+
+            if (filenames && typeof migration_comment_available === 'boolean'){
+                commentCreator(filenames, pr_number);
+            }else if(typeof migration_comment_available === 'string'){
+                let comment_id = parseInt(migration_comment_available.split("/").pop())
+                commentDeleter(comment_id)
             }
             
