@@ -35,7 +35,6 @@ jobs:
               })
             }
             function getPullRequestComments(){
-              console.log("Getting_all_comments")
               return github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -43,10 +42,8 @@ jobs:
               })
             }
             async function checkComments(all_comments){
-              console.log(all_comments)
               if (all_comments.data.length === 0){return false};
               const format_all_comments = await github.paginate(all_comments)
-              console.log("finded_all_comments", format_all_comments)
               for (const comment of format_all_comments){
                   let comment_body = comment.body
                   if (comment_body.includes(`${commentHeading} ${pr_number}`)) {
@@ -57,7 +54,6 @@ jobs:
               }
             }
             async function listAllPullRequestFiles(){
-                console.log("Getting_all_files");
                 return await github.rest.pulls.listFiles({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
@@ -73,17 +69,12 @@ jobs:
                 filenames.push(filename)
               }
             }
-            console.log("all_filenames", filenames)
             const all_comments = await getPullRequestComments();
-            console.log("saaree_comments_mil_gaye")
             const migration_comment_available = await checkComments(all_comments);
-            console.log("all_commnets_checked")
 
             if (filenames.length > 0 && typeof migration_comment_available === 'boolean'){
-                console.log("comment_creator")
                 commentCreator(filenames, pr_number);
             }else if(typeof migration_comment_available === 'string'){
-                console.log("comment_deletor")
                 let comment_id = parseInt(migration_comment_available.split("/").pop())
                 commentDeleter(comment_id)
             }
