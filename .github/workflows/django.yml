@@ -44,7 +44,7 @@ jobs:
               })
             }
             async function checkComments(all_comments){
-              console.log("full_comments_are", all_comments)
+              if (all_comments.data.length === 0){return false}
               const format_all_comments = await github.paginate(all_comments)
               console.log("all_comments", format_all_comments)
               for (const comment of format_all_comments){
