@@ -32,7 +32,7 @@ jobs:
               github.rest.issues.deleteComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                comment_id : parseInt(comment_id)
+                comment_id : `${comment_id}`
               })
             }
             function getPullRequestComments(){
@@ -46,7 +46,7 @@ jobs:
             async function checkComments(all_comments){
               if (all_comments.data.length === 0){return false}
               const format_all_comments = await github.paginate(all_comments)
-              console.log("all_comments", format_all_comments)
+              console.log("finded_all_comments", format_all_comments)
               for (const comment of format_all_comments){
                   let comment_body = comment.body
                   if (comment_body.includes(`${commentHeading} ${pr_number}`)) {
@@ -75,7 +75,9 @@ jobs:
             }
             console.log("all_filenames", filenames)
             const all_comments = await getPullRequestComments();
+            console.log("saaree_comments_mil_gaye")
             const migration_comment_available = await checkComments(all_comments);
+            console.log("all_commnets_checked")
 
             if (filenames.length > 0 && typeof migration_comment_available === 'boolean'){
                 console.log("comment_creator")
