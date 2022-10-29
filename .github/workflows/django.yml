@@ -32,7 +32,7 @@ jobs:
               github.rest.issues.deleteComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                comment_id : `${comment_id}`
+                comment_id : comment_id
               })
             }
             function getPullRequestComments(){
