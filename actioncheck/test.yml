@@ -1,0 +1,77 @@
+name: Migration Check
+
+on:
+  pull_request:
+    types: [opened, reopened, edited]
+    branches:
+      - 'develop'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const commentHeading = 'Migration file detected for PR number: ';
+            const pr_number = context.issue.number;
+            let filenames = [];
+
+            function commentCreator(filenames, pr_number) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `${filenames} ${commentHeading} ${pr_number}`
+              })
+            }
+            
+            function commentDeleter() {
+              github.rest.issues.deleteComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              })
+            }
+            function checkPullRequestComments(){
+              return github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              })
+            }
+            
+            async function listAllPullRequestFiles(){
+                return await github.rest.pulls.listFiles({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number,
+                });
+            }
+            let filenames = []
+            const pulls = await listAllPullRequestFiles();
+            const pr_number = context.issue.number
+            const issues = await github.paginate(pulls)
+
+            for (const issue of issues) {
+              let filename = String(issue.filename)
+              if (filename.includes("migrations")){
+                filenames.push(filename)
+              }
+            }
+            // commentCreator(filenames, pr_number);
+            if (filenames){
+              const all_comments = await checkPullRequestComments();
+              const format_all_comments = await github.paginate(all_comments)
+              for (const comment of format_all_comments){
+                let comment_body = comment.body
+                if (comment_body === `${filenames} ${commentHeading} ${pr_number}`) {
+                  console.log("COmment_matched", comment_body, `${filenames} ${commentHeading} ${pr_number}`)
+                }else{
+                  console.log("Comment_not_matched", comment_body, `${filenames} ${commentHeading} ${pr_number}`)
+                }
+              }
+            }
+            
