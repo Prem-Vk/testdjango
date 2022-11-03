@@ -7,7 +7,9 @@ function commentCreator(filenames, pr_number) {
     issue_number: context.issue.number,
     owner: context.repo.owner,
     repo: context.repo.repo,
-    body: `${filenames} ${commentHeading} ${pr_number}`,
+    body: `${filenames} ${commentHeading} ${pr_number}
+
+    Please have a look from django [migrations](https://phab.instamojo.com/w/engineering/best_practices_for_django_migrations/) best practice on this link. `
   });
 }
 
