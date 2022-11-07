@@ -15,28 +15,18 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const commentHeading = 'Migration file detected for PR number: ';
-            const commentBody = `
 
-                The removal of a field HAS TO be done with little more care in following deployment order:
-                1. Make the field nullable in model & generate corresponding migration file.
-                    If the column we’re deleting is already nullable, we can skip this step.
-                2. Remove the field from the model and it’s usage from code. DO NOT generate a corresponding migration file.
-                    This will make the Django ORM to stop including this field name in SELECT queries.
-                3. Generate migration file for removing the field from database. ✨`
-            const pr_number = context.issue.number;
-            let filenames = [];
-
-            function commentCreator(filenames, pr_number) {
+            function createComment(filenames) {
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `${filenames} ${commentHeading} ${pr_number}
+                body: `${filenames} ${commentHeading}
                         Please have a look on django [migrations](https://phab.instamojo.com/w/engineering/best_practices_for_django_migrations/) best practices. `
               })
             }
-            
-            function commentDeleter(comment_id) {
+
+            function deleteComment(comment_id) {
               github.rest.issues.deleteComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -55,10 +45,10 @@ jobs:
               const format_all_comments = await github.paginate(all_comments)
               for (const comment of format_all_comments){
                   let comment_body = comment.body
-                  if (comment_body.includes(`${commentHeading} ${pr_number}`)) {
+                  if (comment_body.includes(`${commentHeading}`)) {
                       return String(comment.url)
                   }else{
-                      return false
+                      return 0
                   }
               }
             }
@@ -69,11 +59,12 @@ jobs:
                   pull_number: context.issue.number,
                 });
             }
-            const pulls = await listAllPullRequestFiles();
-            const issues = await github.paginate(pulls)
+            let filenames = [];
+            const prFiles = await listAllPullRequestFiles();
+            const allFilesData = await github.paginate(prFiles)
 
-            for (const issue of issues) {
-              let filename = String(issue.filename)
+            for (const fileData of allFilesData) {
+              let filename = String(fileData.filename)
               if (filename.includes("migrations")){
                 filenames.push(filename)
               }
@@ -81,10 +72,11 @@ jobs:
             const all_comments = await getPullRequestComments();
             const migration_comment_available = await checkComments(all_comments);
 
-            if (filenames.length > 0 && typeof migration_comment_available === 'boolean'){
-                commentCreator(filenames, pr_number);
+            if (filenames.length > 0 && migration_comment_available === 0){
+                createComment(filenames);
+            }else if (filenames.length > 0 && typeof migration_comment_available === 'string'){
+                //pass
             }else if(typeof migration_comment_available === 'string'){
                 let comment_id = parseInt(migration_comment_available.split("/").pop())
-                commentDeleter(comment_id)
+                deleteComment(comment_id)
             }
-            
