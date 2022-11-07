@@ -46,9 +46,9 @@ jobs:
               for (const comment of format_all_comments){
                   let comment_body = comment.body
                   if (comment_body.includes(`${commentHeading}`)) {
-                      return String(comment.url)
+                      return [true, String(comment.url)]
                   }else{
-                      return 0
+                      return [false, null]
                   }
               }
             }
@@ -77,9 +77,9 @@ jobs:
             console.log("all_comments", all_comments)
             console.log("migration_comment_available", migration_comment_available)
 
-            if (filenames.length > 0 && migration_comment_available === 0){
+            if (filenames.length > 0 && migration_comment_available[0] === false){
                 createComment(filenames);
-            }else if (filenames.length > 0 && typeof migration_comment_available === 'string'){
+            }else if (filenames.length > 0 && migration_comment_available[0] === true){
                 //pass
             }else if(typeof migration_comment_available === 'string'){
                 let comment_id = parseInt(migration_comment_available.split("/").pop())
