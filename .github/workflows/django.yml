@@ -41,7 +41,7 @@ jobs:
               })
             }
             async function checkComments(all_comments){
-              if (all_comments.data.length === 0){return false};
+              if (all_comments.data.length === 0){return [false, null]};
               const format_all_comments = await github.paginate(all_comments)
               for (const comment of format_all_comments){
                   let comment_body = comment.body
