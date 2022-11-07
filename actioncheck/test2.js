@@ -1,15 +1,11 @@
-let k = "test";
-let j = 0
+let filenames = ['actioncheck/migrations/0003_test1_age.py']
+let migration_comment_available = [false, null]
 
-console.log(j===0)
 
-function test(){
-    if (k==="test"){
-        return [false, null]
-    }else{
-        return [true, "test"]
-    }
+if (filenames.length > 0 && migration_comment_available[0] === false){
+    console.log("OK")
+}else if (filenames.length > 0 && migration_comment_available[0] === true){
+    console.log("PEHLE SE OK")
+}else if(typeof migration_comment_available === 'string'){
+    console.log("DELETE")
 }
-
-let u = test()
-console.log(u[0])
