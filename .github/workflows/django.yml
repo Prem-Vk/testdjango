@@ -71,12 +71,12 @@ jobs:
             }
             const all_comments = await getPullRequestComments();
             const migration_comment_available = await checkComments(all_comments);
-            console.log("filenames", filenames)
+            console.log("filenames", filenames.length)
             console.log("allFilesData", allFilesData)
             console.log("pr_Files", prFiles)
             console.log("all_comments", all_comments)
-            console.log("migration_comment_available", migration_comment_available)
-
+            console.log("migration_comment_available", migration_comment_available === false)
+              
             if (filenames.length > 0 && migration_comment_available[0] === false){
                 createComment(filenames);
             }else if (filenames.length > 0 && migration_comment_available[0] === true){
