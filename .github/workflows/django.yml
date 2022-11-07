@@ -78,6 +78,7 @@ jobs:
             console.log("migration_comment_available", migration_comment_available === false)
               
             if (filenames.length > 0 && migration_comment_available[0] === false){
+                console.log("Data_yaha_tak_aaya")
                 createComment(filenames);
             }else if (filenames.length > 0 && migration_comment_available[0] === true){
                 //pass
