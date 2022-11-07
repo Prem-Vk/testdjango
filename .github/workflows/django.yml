@@ -81,7 +81,7 @@ jobs:
                 createComment(filenames);
             }else if (filenames.length > 0 && migration_comment_available[0] === true){
                 //pass
-            }else if(typeof migration_comment_available === 'string'){
+            }else if(typeof migration_comment_available[1] === 'string'){
                 let comment_id = parseInt(migration_comment_available.split("/").pop())
                 deleteComment(comment_id)
             }
