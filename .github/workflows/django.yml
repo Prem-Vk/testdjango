@@ -75,7 +75,7 @@ jobs:
             console.log("allFilesData", allFilesData)
             console.log("pr_Files", prFiles)
             console.log("all_comments", all_comments)
-            console.log("migration_comment_available", migration_comment_available === false)
+            console.log("migration_comment_available", migration_comment_available)
             console.log("main_condition", filenames.length > 0 && migration_comment_available[0] === false)
             if (filenames.length > 0 && migration_comment_available[0] === false){
                 console.log("Data_yaha_tak_aaya")
