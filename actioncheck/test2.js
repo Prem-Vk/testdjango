@@ -1,3 +1,66 @@
-let text = "https://api.github.com/repos/Prem-Vk/testdjango/issues/comments/1293025443"
-const myArray = text.split("/").pop();
-console.log(myArray)
+const commentHeading = 'Migration file detected for PR number: ';
+
+            function createComment(filenames) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `${filenames} ${commentHeading}
+                        Please have a look on django [migrations](https://phab.instamojo.com/w/engineering/best_practices_for_django_migrations/) best practices. `
+              })
+            }
+
+            function deleteComment(comment_id) {
+              github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id : `${comment_id}`
+              })
+            }
+            function getPullRequestComments(){
+              return github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              })
+            }
+            async function checkComments(all_comments){
+              if (all_comments.data.length === 0){return false};
+              const format_all_comments = await github.paginate(all_comments)
+              for (const comment of format_all_comments){
+                  let comment_body = comment.body
+                  if (comment_body.includes(`${commentHeading}`)) {
+                      return String(comment.url)
+                  }else{
+                      return 0
+                  }
+              }
+            }
+            async function listAllPullRequestFiles(){
+                return await github.rest.pulls.listFiles({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number,
+                });
+            }
+            let filenames = [];
+            const prFiles = await listAllPullRequestFiles();
+            const allFilesData = await github.paginate(prFiles)
+
+            for (const fileData of allFilesData) {
+              let filename = String(fileData.filename)
+              if (filename.includes("migrations")){
+                filenames.push(filename)
+              }
+            }
+            const all_comments = await getPullRequestComments();
+            const migration_comment_available = await checkComments(all_comments);
+
+            if (filenames.length > 0 && migration_comment_available === 0){
+                createComment(filenames);
+            }else if (filenames.length > 0 && typeof migration_comment_available === 'string'){
+                //pass
+            }else (typeof migration_comment_available === 'string');{
+                let comment_id = parseInt(migration_comment_available.split("/").pop())
+                deleteComment(comment_id)
+            }
