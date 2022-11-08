@@ -71,12 +71,17 @@ jobs:
             }
             const all_comments = await getPullRequestComments();
             const migration_comment_available = await checkComments(all_comments);
-
+            console.log("migration_comment_available", migration_comment_available)
+            console.loh("all_filenames", filenames)
+            
             if (filenames.length > 0 && migration_comment_available[0] === false){
+                console.log("Comment_creator")
                 createComment(filenames);
             }else if (filenames.length > 0 && migration_comment_available === true){
+                console.log("Do_NOTHING")
                 //pass
             }else if(filenames.length === 0 && migration_comment_available === true){
+                cosnole.log("DO_DELETE")
                 let comment_id = parseInt(migration_comment_available[1].split("/").pop())
                 deleteComment(comment_id)
             }
