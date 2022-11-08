@@ -3,7 +3,7 @@ name: Migration Check
 on:
   pull_request:
     branches:
-      - master
+      - develop
 
 jobs:
   build:
@@ -14,8 +14,9 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const commentHeading = 'Migration file detected for PR number: ';
+            const commentHeading = 'Migration file detected for this pull request.';
 
+            //Comment creator function
             function createComment(filenames) {
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
@@ -25,7 +26,8 @@ jobs:
                         Please have a look on django [migrations](https://phab.instamojo.com/w/engineering/best_practices_for_django_migrations/) best practices. `
               })
             }
-
+            
+            //Comment deletor function
             function deleteComment(comment_id) {
               github.rest.issues.deleteComment({
                 owner: context.repo.owner,
@@ -33,6 +35,8 @@ jobs:
                 comment_id : `${comment_id}`
               })
             }
+
+            // Get all comments in an PR
             function getPullRequestComments(){
               return github.rest.issues.listComments({
                 owner: context.repo.owner,
@@ -40,6 +44,8 @@ jobs:
                 issue_number: context.issue.number,
               })
             }
+
+            // Find migration commnet in all commnets of a PR.
             async function checkComments(all_comments){
               if (all_comments.data.length === 0){return [false, null]};
               const format_all_comments = await github.paginate(all_comments)
@@ -52,6 +58,8 @@ jobs:
                   }
               }
             }
+
+            //Get all files (name with location) from an PR
             async function listAllPullRequestFiles(){
                 return await github.rest.pulls.listFiles({
                   owner: context.repo.owner,
@@ -71,17 +79,12 @@ jobs:
             }
             const all_comments = await getPullRequestComments();
             const migration_comment_available = await checkComments(all_comments);
-            console.log("migration_comment_available", migration_comment_available)
-            console.log("all_filenames", filenames)
-            console.log("filenames_length", filenames.length === 0)
+
             if (filenames.length > 0 && migration_comment_available[0] === false){
-                console.log("Comment_creator")
                 createComment(filenames);
             }else if (filenames.length > 0 && migration_comment_available[0] === true){
-                console.log("Do_NOTHING")
                 //pass
             }else if(filenames.length === 0 && migration_comment_available[0] === true){
-                console.log("DO_DELETE")
                 let comment_id = parseInt(migration_comment_available[1].split("/").pop())
                 deleteComment(comment_id)
             }
