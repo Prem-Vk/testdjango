@@ -77,10 +77,10 @@ jobs:
             if (filenames.length > 0 && migration_comment_available[0] === false){
                 console.log("Comment_creator")
                 createComment(filenames);
-            }else if (filenames.length > 0 && migration_comment_available === true){
+            }else if (filenames.length > 0 && migration_comment_available[0] === true){
                 console.log("Do_NOTHING")
                 //pass
-            }else if(filenames.length === 0 && migration_comment_available === true){
+            }else if(filenames.length === 0 && migration_comment_available[0] === true){
                 console.log("DO_DELETE")
                 let comment_id = parseInt(migration_comment_available[1].split("/").pop())
                 deleteComment(comment_id)
