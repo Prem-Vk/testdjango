@@ -81,7 +81,7 @@ jobs:
                 console.log("Do_NOTHING")
                 //pass
             }else if(filenames.length === 0 && migration_comment_available === true){
-                cosnole.log("DO_DELETE")
+                console.log("DO_DELETE")
                 let comment_id = parseInt(migration_comment_available[1].split("/").pop())
                 deleteComment(comment_id)
             }
