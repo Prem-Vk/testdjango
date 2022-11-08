@@ -3,7 +3,7 @@ name: Migration Check
 on:
   pull_request:
     branches:
-      - master
+      - develop
 
 jobs:
   build:
@@ -71,18 +71,12 @@ jobs:
             }
             const all_comments = await getPullRequestComments();
             const migration_comment_available = await checkComments(all_comments);
-            console.log("filenames", filenames.length)
-            console.log("allFilesData", allFilesData)
-            console.log("pr_Files", prFiles)
-            console.log("all_comments", all_comments)
-            console.log("migration_comment_available", migration_comment_available)
-            console.log("main_condition", filenames.length > 0 && migration_comment_available[0] === false)
+
             if (filenames.length > 0 && migration_comment_available[0] === false){
-                console.log("Data_yaha_tak_aaya")
                 createComment(filenames);
-            }else if (filenames.length > 0 && migration_comment_available[0] === true){
+            }else if (filenames.length > 0 && migration_comment_available === true){
                 //pass
-            }else if(typeof migration_comment_available[1] === 'string'){
-                let comment_id = parseInt(migration_comment_available.split("/").pop())
+            }else if(filenames.length === 0 && migration_comment_available === true){
+                let comment_id = parseInt(migration_comment_available[1].split("/").pop())
                 deleteComment(comment_id)
             }
