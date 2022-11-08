@@ -1,4 +1,4 @@
-from email.policy import default
+
 from django.db import models
 
 class Test1(models.Model):
