@@ -72,7 +72,7 @@ jobs:
             const all_comments = await getPullRequestComments();
             const migration_comment_available = await checkComments(all_comments);
             console.log("migration_comment_available", migration_comment_available)
-            console.loh("all_filenames", filenames)
+            console.log("all_filenames", filenames)
             
             if (filenames.length > 0 && migration_comment_available[0] === false){
                 console.log("Comment_creator")
