@@ -85,6 +85,6 @@ jobs:
             }else if (filenames.length > 0 && migration_comment_id !== 0){
                 //pass
             }else if(filenames.length === 0 && migration_comment_id !== 0){
-                let comment_id = parseInt(migration_comment_id[1].split("/").pop())
+                let comment_id = parseInt(migration_comment_id)
                 deleteComment(comment_id)
             }
