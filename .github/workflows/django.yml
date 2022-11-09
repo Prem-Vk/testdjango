@@ -26,7 +26,7 @@ jobs:
                         Please have a look on django [migrations](https://phab.instamojo.com/w/engineering/best_practices_for_django_migrations/) best practices. `
               })
             }
-            
+
             //Comment deletor function
             function deleteComment(comment_id) {
               github.rest.issues.deleteComment({
@@ -46,15 +46,15 @@ jobs:
             }
 
             // Find migration commnet in all commnets of a PR.
-            async function checkComments(all_comments){
-              if (all_comments.data.length === 0){return [false, null]};
+            async function getMigrationCommentId(all_comments){
+              if (all_comments.data.length === 0){return 0};
               const format_all_comments = await github.paginate(all_comments)
               for (const comment of format_all_comments){
                   let comment_body = comment.body
                   if (comment_body.includes(`${commentHeading}`)) {
-                      return [true, String(comment.url)]
+                      return String(comment.url).split("/").pop()
                   }else{
-                      return [false, null]
+                      return 0
                   }
               }
             }
@@ -78,13 +78,13 @@ jobs:
               }
             }
             const all_comments = await getPullRequestComments();
-            const migration_comment_available = await checkComments(all_comments);
+            const migration_comment_id = await getMigrationCommentId(all_comments);
 
-            if (filenames.length > 0 && migration_comment_available[0] === false){
+            if (filenames.length > 0 && migration_comment_id === 0){
                 createComment(filenames);
-            }else if (filenames.length > 0 && migration_comment_available[0] === true){
+            }else if (filenames.length > 0 && migration_comment_id !== 0){
                 //pass
-            }else if(filenames.length === 0 && migration_comment_available[0] === true){
-                let comment_id = parseInt(migration_comment_available[1].split("/").pop())
+            }else if(filenames.length === 0 && migration_comment_id !== 0){
+                let comment_id = parseInt(migration_comment_id[1].split("/").pop())
                 deleteComment(comment_id)
             }
