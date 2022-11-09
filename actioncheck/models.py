@@ -1,5 +1,6 @@
 
 from django.db import models
+from django import template
 
 class Test1(models.Model):
     show_on_store = models.BooleanField(default=True)
